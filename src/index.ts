@@ -1,13 +1,10 @@
-
 import { readFileSync, statSync } from 'node:fs'
-import { relative } from 'node:path'
 import matter from 'gray-matter'
 import { normalizePath, type Plugin } from 'vite'
 import { filePathToRoute, getPageFiles, getTitleFromPath } from './files'
 
 const defaultExts = ['mdx']
 const defaultDir = 'src/pages'
-
 
 function genClientCode(routes: any[]) {
   return `

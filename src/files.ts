@@ -27,9 +27,6 @@ export function getPageFiles(path: string, extensions: string[]): string[] {
   const ext = extsToGlob(extensions)
   const pattern = `**/*.${ext}`
 
-  console.log(pattern);
-  
-
   const files = fg.sync(pattern, {
     onlyFiles: true,
     cwd: path,
@@ -38,7 +35,6 @@ export function getPageFiles(path: string, extensions: string[]): string[] {
   return files
 }
 
-
 /**
  * Converts a file path to a route path based on specified rules.
  * @param {string} filePath - The file path to convert.
@@ -46,20 +42,20 @@ export function getPageFiles(path: string, extensions: string[]): string[] {
  */
 export function filePathToRoute(filePath: string, baseDir: string, basePath?: string): string {
   // Normalize and get the relative file path
-  let routePath = normalizePath(relative(baseDir, filePath)).replace(/\.[^.]+$/, ''); // Remove file extension
+  let routePath = normalizePath(relative(baseDir, filePath)).replace(/\.[^.]+$/, '') // Remove file extension
 
   // Handle special cases for route parameters and wildcard
   routePath = routePath
-      .replace(/\[(\.\.\.)?(\w+)\]/g, (match, isWildcard, paramName) => {
-          return isWildcard ? `*${paramName}` : `:${paramName}`;
-      }) // Replace [param] with :param and [...wildcard] with *wildcard
-      .replace(/\/?index$/, '') // Convert /index to /
-      .replace(/\/\//g, '/'); // Handle accidental double slashes
+    .replace(/\[(\.\.\.)?(\w+)\]/g, (match, isWildcard, paramName) => {
+      return isWildcard ? `*${paramName}` : `:${paramName}`
+    }) // Replace [param] with :param and [...wildcard] with *wildcard
+    .replace(/\/?index$/, '') // Convert /index to /
+    .replace(/\/\//g, '/') // Handle accidental double slashes
 
   // Ensure root route is returned as `/`
   if (routePath === '') {
-      routePath = '/';
+    routePath = '/'
   }
 
-  return basePath ? `${basePath}${routePath}` : routePath;
+  return basePath ? `${basePath}${routePath}` : routePath
 }
