@@ -49,12 +49,12 @@ export function filePathToRoute(filePath: string, baseDir: string, basePath?: st
     .replace(/\[(\.\.\.)?(\w+)\]/g, (match, isWildcard, paramName) => {
       return isWildcard ? `*${paramName}` : `:${paramName}`
     }) // Replace [param] with :param and [...wildcard] with *wildcard
-    .replace(/\/?index$/, '') // Convert /index to /
+    .replace(/\/?index$/, '') // Convert /index to ''
     .replace(/\/\//g, '/') // Handle accidental double slashes
 
-  // Ensure root route is returned as `/`
-  if (routePath === '') {
-    routePath = '/'
+  // Ensure root route is returned as ``
+  if (routePath === '/') {
+    routePath = ''
   }
 
   return basePath ? `${basePath}${routePath}` : routePath
