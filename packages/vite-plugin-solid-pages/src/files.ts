@@ -1,11 +1,7 @@
 import { join, relative } from 'node:path'
 
 import fg from 'fast-glob'
-import { normalizePath } from 'vite'
-
-export function slash(str: string) {
-  return str.replace(/\\/g, '/')
-}
+import { normalizePath, slash } from './utils'
 
 export function getTitleFromPath(filePath: string) {
   const parts = filePath.split('/')
