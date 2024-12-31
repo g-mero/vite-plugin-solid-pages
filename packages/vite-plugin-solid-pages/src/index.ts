@@ -4,8 +4,9 @@ import { normalizePath, type Plugin } from 'vite'
 import { filePathToRoute, getPageFiles, getTitleFromPath } from './files'
 import { filterExports } from './module'
 import { checkRouteFileStatus } from './route-config'
+import { strIsInclude } from './utils'
 
-const defaultExts = ['mdx']
+const defaultExts = ['tsx', 'jsx']
 const defaultDir = 'src/pages'
 
 function genClientCode(routes: any[]) {
@@ -43,8 +44,8 @@ function genClientCode(routes: any[]) {
 }
 
 export default function solidPagesPlugin(config?: {
-  dir: string
-  extensions: string[]
+  dir?: string
+  extensions?: string[]
 }): Plugin {
   const VIRTUAL_ID = 'virtual:pages'
   const RESOLVED_ID = `\0${VIRTUAL_ID}`
@@ -55,12 +56,25 @@ export default function solidPagesPlugin(config?: {
   const routes: any[] = []
 
   const picksIds: Map<string, string[]> = new Map()
+  const originIdsWithVirtual: Map<string, string> = new Map()
 
   return {
     name: 'vite-plugin-solid-pages',
+    handleHotUpdate(ctx) {
+      const virtualId = originIdsWithVirtual.get(ctx.file)
+      if (!virtualId) {
+        return
+      }
+
+      const mod = ctx.server.moduleGraph.getModuleById(virtualId)
+      if (!mod) {
+        return
+      }
+      return [mod]
+    },
     resolveId: {
       order: 'pre',
-      handler(id) {
+      async handler(id) {
         if (id === VIRTUAL_ID) {
           return RESOLVED_ID
         }
@@ -72,11 +86,15 @@ export default function solidPagesPlugin(config?: {
         const query = new URLSearchParams(id.split('?')[1])
         const picks = query.getAll('pick')
         if (picks.length) {
+          // remove pick query from id
           const resolvedId = idQuery.replace(/\?pick=.+/, '')
           const ext = resolvedId.split('.').pop()
           const withoutExt = resolvedId.replace(/\.\w+$/, '')
+          // a new id with picks, it is virtual and will auto generate code when load
           const resolvedPath = `${withoutExt}$${picks.join('-')}.${ext}`
           picksIds.set(resolvedPath, picks)
+          originIdsWithVirtual.set(resolvedId, resolvedPath)
+
           return resolvedPath
         }
       },
@@ -85,6 +103,7 @@ export default function solidPagesPlugin(config?: {
       const files = getPageFiles(dir, extensions)
       routes.length = 0
       picksIds.clear()
+      originIdsWithVirtual.clear()
 
       for (const file of files) {
         const fileStat = fs.statSync(file)
@@ -131,7 +150,11 @@ export default function solidPagesPlugin(config?: {
       const ext = id.split('.').pop()
       const originnalId = `${originalPath}.${ext}`
       const code = fs.readFileSync(originnalId, 'utf-8')
-      const newCode = filterExports(code, picks, ext as any)
+      const supportExts = ['tsx', 'jsx'] as const
+      if (!strIsInclude(supportExts, ext)) {
+        return code
+      }
+      const newCode = filterExports(code, picks, ext)
       return newCode
     },
 
