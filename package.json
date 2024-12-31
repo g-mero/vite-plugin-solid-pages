@@ -3,6 +3,7 @@
   "packageManager": "pnpm@9.15.2",
   "scripts": {
     "build": "turbo build",
+    "build:pkg": "pnpm --filter vite-plugin-solid-pages build",
     "dev": "turbo dev",
     "clean": "rimraf -g ./**/node_modules ./**/.turbo",
     "pub": "pnpm --filter vite-plugin-solid-pages pub",
