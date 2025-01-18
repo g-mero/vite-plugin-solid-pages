@@ -46,6 +46,7 @@ export function filePathToRoute(filePath: string, baseDir: string, basePath?: st
       return isWildcard ? `*${paramName}` : `:${paramName}`
     }) // Replace [param] with :param and [...wildcard] with *wildcard
     .replace(/\/?index$/, '') // Convert /index to ''
+    .replace(/\(.*?\)/g, '') // Remove (...)
     .replace(/\/\//g, '/') // Handle accidental double slashes
 
   // Ensure root route is returned as ``
