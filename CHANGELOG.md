@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.0](https://github.com/g-mero/vite-plugin-solid-pages/compare/v0.1.2...v0.2.0) (2025-01-18)
+
+
+### Features
+
+* resolve (...) ([752bbba](https://github.com/g-mero/vite-plugin-solid-pages/commit/752bbbafffe599f354427a3466f24b6447fe7a31))
+
 ## [0.1.2](https://github.com/g-mero/vite-plugin-solid-pages/compare/v0.1.1...v0.1.2) (2024-12-31)
 
 

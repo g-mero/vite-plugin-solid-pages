@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-solid-pages",
   "type": "module",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "vite-plugin-solid-pages",
   "license": "MIT",
   "homepage": "https://github.com/g-mero/vite-plugin-solid-pages",
