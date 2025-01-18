@@ -35,7 +35,9 @@
     "build": "tsup && pnpm after-build",
     "dev": "tsup --watch",
     "pub": " pnpm build && cd dist && pnpm publish",
-    "test": "vitest"
+    "test": "vitest --run",
+    "lint": "pnpm exec eslint .",
+    "type-check": "tsc --noEmit --skipLibCheck"
   },
   "peerDependencies": {
     "@solidjs/router": "^0.15.2",

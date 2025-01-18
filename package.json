@@ -8,6 +8,8 @@
     "clean": "rimraf -g ./**/node_modules ./**/.turbo",
     "pub": "pnpm --filter vite-plugin-solid-pages pub",
     "test": "pnpm --filter vite-plugin-solid-pages test",
+    "lint": "pnpm --filter vite-plugin-solid-pages lint",
+    "type-check": "pnpm --filter vite-plugin-solid-pages type-check",
     "release": "commit-and-tag-version -i CHANGELOG.md --same-file",
     "prepare": "husky"
   },
