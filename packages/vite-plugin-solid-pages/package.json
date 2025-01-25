@@ -51,7 +51,7 @@
     "radash": "^12.1.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3.12.1",
+    "@antfu/eslint-config": "^4.0.0",
     "@repo/ts-config": "workspace:*",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.5.2",
