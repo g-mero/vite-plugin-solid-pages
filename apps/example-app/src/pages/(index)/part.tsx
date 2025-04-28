@@ -1,7 +1,3 @@
 export function Part() {
-  return (
-    <div>
-      part
-    </div>
-  )
+  return <div>part</div>
 }

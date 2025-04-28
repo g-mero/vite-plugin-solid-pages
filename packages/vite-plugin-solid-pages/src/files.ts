@@ -23,10 +23,12 @@ export function getPageFiles(path: string, extensions: string[]): string[] {
   const ext = extsToGlob(extensions)
   const pattern = `**/*.${ext}`
 
-  const files = fg.sync(pattern, {
-    onlyFiles: true,
-    cwd: path,
-  }).map(p => slash(join(path, p)))
+  const files = fg
+    .sync(pattern, {
+      onlyFiles: true,
+      cwd: path,
+    })
+    .map((p) => slash(join(path, p)))
 
   return files
 }
@@ -42,7 +44,7 @@ export function filePathToRoute(filePath: string, baseDir: string, basePath?: st
 
   // Handle special cases for route parameters and wildcard
   routePath = routePath
-    .replace(/\[(\.\.\.)?(\w+)\]/g, (match, isWildcard, paramName) => {
+    .replace(/\[(\.\.\.)?(\w+)\]/g, (_match, isWildcard, paramName) => {
       return isWildcard ? `*${paramName}` : `:${paramName}`
     }) // Replace [param] with :param and [...wildcard] with *wildcard
     .replace(/\/?index$/, '') // Convert /index to ''

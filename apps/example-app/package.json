@@ -5,20 +5,25 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.ts\""
   },
   "dependencies": {
     "@solidjs/router": "^0.15.2",
     "solid-js": "^1.9.3",
-    "unocss": "^65.0.0"
+    "unocss": "^66.0.0"
   },
   "devDependencies": {
     "@repo/ts-config": "workspace:*",
     "typescript": "5.8.3",
     "vite": "6.3.3",
     "vite-plugin-solid": "^2.11.0",
-    "vite-plugin-solid-pages": "workspace:*"
+    "vite-plugin-solid-pages": "workspace:*",
+    "@mdx-js/rollup": "3.1.0",
+    "@types/node": "^22.5.2",
+    "rehype-pretty-code": "^0.14.0",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.0"
   }
 }

@@ -8,9 +8,9 @@ const postfixRE = /[?#].*$/
 export function cleanUrl(url: string): string {
   return url.replace(postfixRE, '')
 }
-export const isWindows
+export const isWindows =
   // eslint-disable-next-line node/prefer-global/process
-  = typeof process !== 'undefined' && process.platform === 'win32'
+  typeof process !== 'undefined' && process.platform === 'win32'
 
 export function normalizePath(id: string): string {
   return path.posix.normalize(isWindows ? slash(id) : id)

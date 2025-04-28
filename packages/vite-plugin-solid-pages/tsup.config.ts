@@ -1,5 +1,5 @@
 // tsup.config.ts
-import { defineConfig, type Options } from 'tsup'
+import { type Options, defineConfig } from 'tsup'
 
 function generateConfig(opt: Options): Options {
   return {
@@ -21,4 +21,4 @@ function generateConfig(opt: Options): Options {
   }
 }
 
-export default defineConfig(options => [generateConfig(options)])
+export default defineConfig((options) => [generateConfig(options)])

@@ -1,6 +1,6 @@
 import fs from 'fs-extra'
 import matter from 'gray-matter'
-import { normalizePath, type Plugin } from 'vite'
+import { type Plugin, normalizePath } from 'vite'
 import { filePathToRoute, getPageFiles, getTitleFromPath } from './files'
 import { filterExports } from './module'
 import { checkRouteFileStatus } from './route-config'
@@ -18,16 +18,23 @@ function genClientCode(routes: any[]) {
     const componentName = `${routeName}$default`
 
     if (!route.isLazy) {
-      routeImports.push(`import ${componentName} from '${normalizePath(route.componentPath)}?pick=default&pick=style-imports&pick=side-effects';`)
+      routeImports.push(
+        `import ${componentName} from '${normalizePath(route.componentPath)}?pick=default&pick=style-imports&pick=side-effects';`,
+      )
     }
     if (route.hasConfig) {
-      routeImports.push(`import {route as ${routeName}} from '${normalizePath(route.componentPath)}?pick=route';`)
-    }
-    else {
+      routeImports.push(
+        `import {route as ${routeName}} from '${normalizePath(route.componentPath)}?pick=route';`,
+      )
+    } else {
       routeImports.push(`const ${routeName} = {};`)
     }
-    const componentStr = route.isLazy ? `lazy(() => import('${normalizePath(route.componentPath)}?pick=default&pick=style-imports&pick=side-effects'))` : componentName
-    routeStrs.push(`{path: '${route.path}', component: ${componentStr}, info: ${JSON.stringify(route.info)}, ...${routeName}}`)
+    const componentStr = route.isLazy
+      ? `lazy(() => import('${normalizePath(route.componentPath)}?pick=default&pick=style-imports&pick=side-effects'))`
+      : componentName
+    routeStrs.push(
+      `{path: '${route.path}', component: ${componentStr}, info: ${JSON.stringify(route.info)}, ...${routeName}}`,
+    )
   })
 
   return `
@@ -117,6 +124,7 @@ export default function solidPagesPlugin(config?: {
         const ids = await this.resolve(file)
         route.componentPath = ids?.id
         const content = fs.readFileSync(route.componentPath, 'utf-8')
+        route.isLazy = true
         if (file.endsWith('.tsx') || file.endsWith('.jsx')) {
           const c = checkRouteFileStatus(content)
 
@@ -125,10 +133,12 @@ export default function solidPagesPlugin(config?: {
           }
           route.isLazy = c.isLazy
           route.hasConfig = c.hasConfig
-        }
-        else if (file.endsWith('.mdx')) {
+        } else if (file.endsWith('.mdx')) {
           const data = matter(content)
           route.info = Object.assign(info, data.data)
+          console.log(data.data)
+
+          route.isLazy = data.data.lazy_import ?? true
         }
         routes.push(route)
       }
@@ -137,19 +147,20 @@ export default function solidPagesPlugin(config?: {
     load(id) {
       if (id === RESOLVED_ID) {
         const code = genClientCode(routes)
+        console.log(code)
+
         return code
       }
       if (id === RESOLVED_ROUTE_INFO_ID) {
-        return `export default ${JSON.stringify(routes.map(r => ({ info: r.info, path: r.path })))}`
+        return `export default ${JSON.stringify(routes.map((r) => ({ info: r.info, path: r.path })))}`
       }
 
       const picks = picksIds.get(id)
-      if (!picks)
-        return
+      if (!picks) return
       const originalPath = id.replace(/\$[^$]+$/, '')
       const ext = id.split('.').pop()
-      const originnalId = `${originalPath}.${ext}`
-      const code = fs.readFileSync(originnalId, 'utf-8')
+      const originalId = `${originalPath}.${ext}`
+      const code = fs.readFileSync(originalId, 'utf-8')
       const supportExts = ['tsx', 'jsx'] as const
       if (!strIsInclude(supportExts, ext)) {
         return code
@@ -157,6 +168,5 @@ export default function solidPagesPlugin(config?: {
       const newCode = filterExports(code, picks, ext)
       return newCode
     },
-
   }
 }

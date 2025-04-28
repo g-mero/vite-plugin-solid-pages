@@ -3,25 +3,26 @@ import { parseSync, printSync } from '@swc/core'
 import { strIsInclude } from './utils'
 
 function jscParserConfig(ext: 'ts' | 'js' | 'tsx' | 'jsx'): ParserConfig {
-  const res = {
-  } as Record<string, any>
+  const res = {} as Record<string, any>
   const firstChar = ext[0]
   const lastChar = ext[ext.length - 1]
   const param = `${firstChar}sx`
   res.syntax = firstChar === 't' ? 'typescript' : 'ecmascript'
   res[param] = lastChar === 'x'
 
-  return res as {
-    syntax: 'typescript'
-    tsx: boolean
-  } | {
-    syntax: 'ecmascript'
-    jsx: boolean
-  }
+  return res as
+    | {
+        syntax: 'typescript'
+        tsx: boolean
+      }
+    | {
+        syntax: 'ecmascript'
+        jsx: boolean
+      }
 }
 
 const styleFileExts = ['css', 'scss', 'sass', 'less', 'styl'] as const
-function isStyleExt(ext?: string): ext is typeof styleFileExts[number] {
+function isStyleExt(ext?: string): ext is (typeof styleFileExts)[number] {
   return strIsInclude(styleFileExts, String(ext))
 }
 
@@ -31,7 +32,11 @@ function isStyleExt(ext?: string): ext is typeof styleFileExts[number] {
  * @param {string[]} picks - 要保留的导出名称数组
  * @returns {string} - 生成的新模块代码
  */
-export function filterExports(sourceCode: string, picks: string[], ext: 'ts' | 'js' | 'tsx' | 'jsx'): string {
+export function filterExports(
+  sourceCode: string,
+  picks: string[],
+  ext: 'ts' | 'js' | 'tsx' | 'jsx',
+): string {
   const jscParserConf = jscParserConfig(ext)
   const ast = parseSync(sourceCode, jscParserConf)
 
@@ -39,7 +44,7 @@ export function filterExports(sourceCode: string, picks: string[], ext: 'ts' | '
     switch (node.type) {
       // export {a, b}
       case 'ExportNamedDeclaration':
-        node.specifiers = node.specifiers.filter(spec =>
+        node.specifiers = node.specifiers.filter((spec) =>
           spec.type === 'ExportSpecifier'
             ? picks.includes(spec.exported?.value ? spec.exported.value : spec.orig.value)
             : false,
@@ -51,8 +56,8 @@ export function filterExports(sourceCode: string, picks: string[], ext: 'ts' | '
         if (type === 'FunctionDeclaration') {
           return picks.includes(node.declaration.identifier.value)
         }
-        else if (type === 'VariableDeclaration') {
-          return node.declaration.declarations.some(decl =>
+        if (type === 'VariableDeclaration') {
+          return node.declaration.declarations.some((decl) =>
             decl.id.type === 'Identifier' ? picks.includes(decl.id.value) : false,
           )
         }
@@ -69,8 +74,7 @@ export function filterExports(sourceCode: string, picks: string[], ext: 'ts' | '
 
       case 'ImportDeclaration': {
         const specs = node.specifiers
-        if (specs.length > 0)
-          break
+        if (specs.length > 0) break
         const hasCss = picks.includes('style-imports')
         const hasSideEffects = picks.includes('side-effects')
         const ext = node.source.value.split('.').pop()

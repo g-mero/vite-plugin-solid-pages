@@ -6,7 +6,9 @@ function cpy(source, dst) {
 
 function rebuildPkg() {
   const pkg = fs.readJsonSync('package.json')
+  // biome-ignore lint/performance/noDelete: <explanation>
   delete pkg.scripts
+  // biome-ignore lint/performance/noDelete: <explanation>
   delete pkg.devDependencies
   pkg.files = ['*']
   const exports = JSON.stringify(pkg.exports)

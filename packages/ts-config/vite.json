@@ -9,9 +9,7 @@
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
     "paths": {
-      "~/*": [
-        "src/*"
-      ]
+      "~/*": ["src/*"]
     },
     "sourceMap": true,
     "resolveJsonModule": true,

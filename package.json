@@ -8,17 +8,17 @@
     "clean": "rimraf -g ./**/node_modules ./**/.turbo",
     "pub": "pnpm --filter vite-plugin-solid-pages pub",
     "test": "pnpm --filter vite-plugin-solid-pages test",
-    "lint": "pnpm --filter vite-plugin-solid-pages lint",
+    "lint": "pnpm exec biome check .",
+    "lint:fix": "pnpm exec biome check --write .",
     "type-check": "pnpm --filter vite-plugin-solid-pages type-check",
     "release": "commit-and-tag-version -i CHANGELOG.md --same-file",
     "prepare": "husky"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3",
+    "@biomejs/biome": "1.9.4",
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
     "commit-and-tag-version": "^12.5.0",
-    "eslint": "^9",
     "husky": "^9.1.7",
     "turbo": "^2.3.3"
   },
