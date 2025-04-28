@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.3.0](https://github.com/g-mero/vite-plugin-solid-pages/compare/v0.2.0...v0.3.0) (2025-04-28)
+
+
+### Features
+
+* mdx `lazy_import` matter support ([7de721a](https://github.com/g-mero/vite-plugin-solid-pages/commit/7de721a755125fab3ad4fa3607e22bed75449634))
+
+
+### Bug Fixes
+
+* **deps:** update dependency unocss to v65 ([#7](https://github.com/g-mero/vite-plugin-solid-pages/issues/7)) ([37327f4](https://github.com/g-mero/vite-plugin-solid-pages/commit/37327f4a83b4c8be16ddfd2e743f85fd32c4b83c))
+
 ## [0.2.0](https://github.com/g-mero/vite-plugin-solid-pages/compare/v0.1.2...v0.2.0) (2025-01-18)
 
 
