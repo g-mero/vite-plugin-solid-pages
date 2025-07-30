@@ -5,6 +5,7 @@ import { filePathToRoute, getPageFiles, getTitleFromPath } from './files'
 import { filterExports } from './module'
 import { checkRouteFileStatus } from './route-config'
 import { strIsInclude } from './utils'
+import path from 'node:path'
 
 const defaultExts = ['tsx', 'jsx']
 const defaultDir = 'src/pages'
@@ -117,11 +118,13 @@ export default function solidPagesPlugin(config?: {
         const info: any = {}
         info.date = fileStat.birthtime
         info.updated = fileStat.mtime
+
         info.title = getTitleFromPath(file)
         const route: any = {}
         route.info = info
         route.path = filePathToRoute(file, dir)
-        const ids = await this.resolve(file)
+
+        const ids = await this.resolve(path.relative(this.environment.config.root, file))
         route.componentPath = ids?.id
         const content = fs.readFileSync(route.componentPath, 'utf-8')
         route.isLazy = true
