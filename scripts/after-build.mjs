@@ -21,7 +21,8 @@ function rebuildPkg() {
 
 function preBuild() {
   cpy('src/client.d.ts', 'dist/client.d.ts');
-  cpy('../../README.md', 'dist/README.md');
+  cpy('README.md', 'dist/README.md');
+  cpy('CHANGELOG.md', 'dist/CHANGELOG.md');
   rebuildPkg();
 }
 
