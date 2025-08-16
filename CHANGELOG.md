@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.3.2](https://github.com/g-mero/vite-plugin-solid-pages/compare/v0.3.1...v0.3.2) (2025-08-16)
+
+
+### Bug Fixes
+
+* reload when route files changed ([3688959](https://github.com/g-mero/vite-plugin-solid-pages/commit/3688959a8e288bee617a6d4642ac70e22e3eb806))
+
 ## [0.3.1](https://github.com/g-mero/vite-plugin-solid-pages/compare/v0.3.0...v0.3.1) (2025-07-30)
 
 
