@@ -1,3 +1,4 @@
+import path from 'node:path'
 import fs from 'fs-extra'
 import matter from 'gray-matter'
 import { type Plugin, normalizePath } from 'vite'
@@ -5,7 +6,6 @@ import { filePathToRoute, getPageFiles, getTitleFromPath } from './files'
 import { filterExports } from './module'
 import { checkRouteFileStatus } from './route-config'
 import { strIsInclude } from './utils'
-import path from 'node:path'
 
 const defaultExts = ['tsx', 'jsx']
 const defaultDir = 'src/pages'
@@ -107,12 +107,13 @@ export default function solidPagesPlugin(config?: {
   return {
     name: 'vite-plugin-solid-pages',
     handleHotUpdate(ctx) {
-      const virtualId = originIdsWithVirtual.get(ctx.file)
+      const { file, server } = ctx
+
+      const virtualId = originIdsWithVirtual.get(file)
       if (!virtualId) {
         return
       }
-
-      const mod = ctx.server.moduleGraph.getModuleById(virtualId)
+      const mod = server.moduleGraph.getModuleById(virtualId)
       if (!mod) {
         return
       }
@@ -120,6 +121,7 @@ export default function solidPagesPlugin(config?: {
     },
     resolveId: {
       order: 'pre',
+
       async handler(id) {
         if (id === VIRTUAL_ID) {
           return RESOLVED_ID
@@ -133,14 +135,15 @@ export default function solidPagesPlugin(config?: {
         const picks = query.getAll('pick')
         if (picks.length) {
           // remove pick query from id
-          const resolvedId = idQuery.replace(/\?pick=.+/, '')
+          const resolvedId = normalizePath(
+            path.resolve(this.environment.config.root, idQuery.replace(/\?pick=.+/, '')),
+          )
           const ext = resolvedId.split('.').pop()
           const withoutExt = resolvedId.replace(/\.\w+$/, '')
           // a new id with picks, it is virtual and will auto generate code when load
           const resolvedPath = `${withoutExt}$${picks.join('-')}.${ext}`
           picksIds.set(resolvedPath, picks)
           originIdsWithVirtual.set(resolvedId, resolvedPath)
-
           return resolvedPath
         }
       },
@@ -184,7 +187,6 @@ export default function solidPagesPlugin(config?: {
         // 重新生成 routes（可以提取 buildStart 的逻辑出来）
         routes.length = 0
         picksIds.clear()
-        originIdsWithVirtual.clear()
         routes.length = 0
         routes.push(...collectRoutes(dir, extensions))
 
@@ -202,7 +204,6 @@ export default function solidPagesPlugin(config?: {
         server.ws.send({ type: 'full-reload' })
       }
 
-      // update when route file is changed
       watcher.on('change', reloadRoutes)
 
       // update when route file is added
