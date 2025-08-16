@@ -51,6 +51,44 @@ function genClientCode(routes: any[]) {
 `
 }
 
+function collectRoutes(dir: string, extensions: string[]) {
+  const files = getPageFiles(dir, extensions)
+  const routes: any[] = []
+
+  for (const file of files) {
+    const fileStat = fs.statSync(file)
+    const info: any = {
+      date: fileStat.birthtime,
+      updated: fileStat.mtime,
+      title: getTitleFromPath(file),
+    }
+
+    const route: any = {
+      info,
+      path: filePathToRoute(file, dir),
+      componentPath: normalizePath(file),
+    }
+
+    const content = fs.readFileSync(route.componentPath, 'utf-8')
+    route.isLazy = true
+
+    if (file.endsWith('.tsx') || file.endsWith('.jsx')) {
+      const c = checkRouteFileStatus(content)
+      if (!c.hasDefault) continue
+      route.isLazy = c.isLazy
+      route.hasConfig = c.hasConfig
+    } else if (file.endsWith('.mdx')) {
+      const data = matter(content)
+      route.info = Object.assign(info, data.data)
+      route.isLazy = data.data.lazy_import ?? true
+    }
+
+    routes.push(route)
+  }
+
+  return routes
+}
+
 export default function solidPagesPlugin(config?: {
   dir?: string
   extensions?: string[]
@@ -108,50 +146,15 @@ export default function solidPagesPlugin(config?: {
       },
     },
     async buildStart() {
-      const files = getPageFiles(dir, extensions)
       routes.length = 0
       picksIds.clear()
       originIdsWithVirtual.clear()
-
-      for (const file of files) {
-        const fileStat = fs.statSync(file)
-        const info: any = {}
-        info.date = fileStat.birthtime
-        info.updated = fileStat.mtime
-
-        info.title = getTitleFromPath(file)
-        const route: any = {}
-        route.info = info
-        route.path = filePathToRoute(file, dir)
-
-        const ids = await this.resolve(path.relative(this.environment.config.root, file))
-        route.componentPath = ids?.id
-        const content = fs.readFileSync(route.componentPath, 'utf-8')
-        route.isLazy = true
-        if (file.endsWith('.tsx') || file.endsWith('.jsx')) {
-          const c = checkRouteFileStatus(content)
-
-          if (!c.hasDefault) {
-            continue
-          }
-          route.isLazy = c.isLazy
-          route.hasConfig = c.hasConfig
-        } else if (file.endsWith('.mdx')) {
-          const data = matter(content)
-          route.info = Object.assign(info, data.data)
-          console.log(data.data)
-
-          route.isLazy = data.data.lazy_import ?? true
-        }
-        routes.push(route)
-      }
+      routes.push(...collectRoutes(dir, extensions))
     },
 
     load(id) {
       if (id === RESOLVED_ID) {
         const code = genClientCode(routes)
-        console.log(code)
-
         return code
       }
       if (id === RESOLVED_ROUTE_INFO_ID) {
@@ -170,6 +173,43 @@ export default function solidPagesPlugin(config?: {
       }
       const newCode = filterExports(code, picks, ext)
       return newCode
+    },
+
+    configureServer(server) {
+      const watcher = server.watcher
+
+      function reloadRoutes(file: string) {
+        if (!file.startsWith(path.resolve(dir))) return
+
+        // 重新生成 routes（可以提取 buildStart 的逻辑出来）
+        routes.length = 0
+        picksIds.clear()
+        originIdsWithVirtual.clear()
+        routes.length = 0
+        routes.push(...collectRoutes(dir, extensions))
+
+        // invalidate virtual modules
+        const mod = server.moduleGraph.getModuleById(RESOLVED_ID)
+        if (mod) {
+          server.moduleGraph.invalidateModule(mod)
+        }
+        const modInfo = server.moduleGraph.getModuleById(RESOLVED_ROUTE_INFO_ID)
+        if (modInfo) {
+          server.moduleGraph.invalidateModule(modInfo)
+        }
+
+        // refresh
+        server.ws.send({ type: 'full-reload' })
+      }
+
+      // update when route file is changed
+      watcher.on('change', reloadRoutes)
+
+      // update when route file is added
+      watcher.on('add', reloadRoutes)
+
+      // update when route file is deleted
+      watcher.on('unlink', reloadRoutes)
     },
   }
 }
