@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-solid-pages",
   "type": "module",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "vite-plugin-solid-pages",
   "license": "MIT",
   "homepage": "https://github.com/g-mero/vite-plugin-solid-pages",
@@ -27,7 +27,9 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "typesVersions": {},
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "after-build": "node ./scripts/after-build.mjs",
     "build": "tsup && pnpm after-build",
