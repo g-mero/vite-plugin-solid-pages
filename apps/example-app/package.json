@@ -17,7 +17,7 @@
   "devDependencies": {
     "@repo/ts-config": "workspace:*",
     "typescript": "5.8.3",
-    "vite": "6.3.3",
+    "vite": "6.3.5",
     "vite-plugin-solid": "^2.11.0",
     "vite-plugin-solid-pages": "workspace:*",
     "@mdx-js/rollup": "3.1.0",
