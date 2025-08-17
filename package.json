@@ -2,7 +2,7 @@
   "name": "vite-plugin-solid-pages",
   "type": "module",
   "version": "0.3.4",
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@10.14.0",
   "description": "vite-plugin-solid-pages",
   "license": "MIT",
   "homepage": "https://github.com/g-mero/vite-plugin-solid-pages",
